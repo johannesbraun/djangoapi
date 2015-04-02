@@ -1,15 +1,49 @@
+import json
 from django.shortcuts import render
 from django.http import HttpResponse
 import requests
+import os
 from .models import Greeting
+import numpy as np
+import pandas as pd
+
+users1k = pd.read_csv("hello/data/users1k.csv", index_col=0, header =None)
+userFeaturesDict = dict(users1k.T)
+productFeaturesNumpy = np.array(pd.read_csv("hello/data/items1k.csv", header =None))
 
 # Create your views here.
 def index(request):
-    r = requests.get('http://httpbin.org/status/418')
-    print r.text
-    return HttpResponse('<pre>' + r.text + '</pre>')
+    times = int(os.environ.get('TIMES',3))
+    return HttpResponse('Hello!'*times)
+
+    #r = requests.get('http://httpbin.org/status/418')
+    #print r.text
+    #return HttpResponse('<pre>' + r.text + '</pre>')
+    
     #return HttpResponse('Hello from Python!')
 
+def ureco(request, uid):
+    recos = recommendProducts(int(uid))
+    return HttpResponse(json.dumps(recos), content_type="application/json")
+
+
+def vreco(request, vector):
+    v = np.array([np.float64(d) for d in vector.split(", ")])
+    recos = recommendFast(v,productFeaturesNumpy,50)    
+    return HttpResponse(json.dumps(recos), content_type="application/json")
+
+def recommendFast(tovector, productFeaturesNumpy, n): 
+    sim = np.dot(tovector,productFeaturesNumpy[:,1:].T)
+    #return sim
+    return [[productFeaturesNumpy[i][0], sim[i]] for i in np.argsort(-sim)[0:n]]
+
+def recommendProducts(user, n=50):
+    #print "users in userFeaturesDict", userFeaturesDict.keys() # empty!!!
+    #tovector = model.userFeatures().lookup(user)[0] # fetch users' vector 
+    tovector = userFeaturesDict[user] # fetch users' vector 
+    print tovector
+    return recommendFast(tovector,productFeaturesNumpy,n) # find closest product 
+    
 
 def db(request):
 

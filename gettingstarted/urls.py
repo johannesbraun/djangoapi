@@ -13,5 +13,7 @@ urlpatterns = patterns('',
     url(r'^$', hello.views.index, name='index'),
     url(r'^db', hello.views.db, name='db'),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^reco/([0-9]+)', hello.views.ureco, name='reco'),
+    url(r'^recov/(.*)', hello.views.vreco, name='recov'),
 
 )
