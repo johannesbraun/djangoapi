@@ -1,3 +1,10 @@
+# Simple API for recommendations based on imported ALS taste vectors  
+Logic is in views.py
+
+sim = np.dot(tovector,productFeaturesNumpy[:,1:].T)
+
+based on: 
+
 # python-getting-started
 
 A barebones Python app, which can easily be deployed to Heroku.
