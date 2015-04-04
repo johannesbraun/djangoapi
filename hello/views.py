@@ -12,6 +12,14 @@ users1k = pd.read_csv("hello/data/users1k.csv", index_col=0, header =None)
 userFeaturesDict = dict(users1k.T)
 productFeaturesNumpy = np.array(pd.read_csv("hello/data/items1k.csv", header =None))
 
+# connect
+con = MySQLdb.connect(
+    host="blasta.chiim1n4uxwu.eu-central-1.rds.amazonaws.com", 
+    user="blasta", 
+    passwd="27051980", 
+    db="blasta")
+cursor = con.cursor()
+
 # Create your views here.
 def index(request):
     times = int(os.environ.get('TIMES',3))
@@ -28,7 +36,7 @@ def ureco(request, uid):
     return HttpResponse(json.dumps(recos), content_type="application/json")
 
 
-def treco(request, tid)
+def treco(request, tid):
     stmt = "select * from blasta.item_tastevectors where tid = %d" %tid
     result = cursor.execute(stmt)
     vector = cursor.fetchall() 
