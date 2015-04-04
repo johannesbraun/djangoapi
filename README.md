@@ -1,5 +1,5 @@
 # Simple API for recommendations based on imported ALS taste vectors  
-Logic is in views.py
+Logic is in hello/views.py
 
 sim = np.dot(tovector,productFeaturesNumpy[:,1:].T)
 
