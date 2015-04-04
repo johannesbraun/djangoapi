@@ -53,7 +53,7 @@ def vreco(request, vector):
 def recommendFast(tovector, productFeaturesNumpy, n): 
     sim = np.dot(tovector,productFeaturesNumpy[:,1:].T)
     #return sim
-    return  [{"id" : int(productFeaturesNumpy[i][0]), "score": sim[i]} for i in np.argsort(-sim)[0:n]]
+    return  [{"score": sim[i], "id" : int(productFeaturesNumpy[i][0])} for i in np.argsort(-sim)[0:n]]
     # return [[productFeaturesNumpy[i][0], sim[i]] for i in np.argsort(-sim)[0:n]]
 
 def recommendProducts(user, n=50):
