@@ -7,10 +7,11 @@ from .models import Greeting
 import numpy as np
 import pandas as pd
 import MySQLdb
+from collections import OrderedDict
 
 users1k = pd.read_csv("hello/data/users1k.csv", index_col=0, header =None)
 userFeaturesDict = dict(users1k.T)
-productFeaturesNumpy = np.array(pd.read_csv("hello/data/items1k.csv", header =None))
+productFeaturesNumpy = np.array(pd.read_csv("hello/data/items100k.csv", header =None))
 
 # connect
 con = MySQLdb.connect(
@@ -37,12 +38,11 @@ def ureco(request, uid):
 
 
 def treco(request, tid):
-
     stmt = "select * from blasta.item_tastevectors where tid = %d" %(int(tid))
     result = cursor.execute(stmt)
     vector = cursor.fetchall() 
     v = np.array((vector[0][1:]))
-    recos = recommendFast(v,productFeaturesNumpy,50)    
+    recos = recommendFast(v,productFeaturesNumpy,50)  
     return HttpResponse(json.dumps(recos), content_type="application/json")
 
 def vreco(request, vector):
@@ -53,7 +53,8 @@ def vreco(request, vector):
 def recommendFast(tovector, productFeaturesNumpy, n): 
     sim = np.dot(tovector,productFeaturesNumpy[:,1:].T)
     #return sim
-    return [[productFeaturesNumpy[i][0], sim[i]] for i in np.argsort(-sim)[0:n]]
+    return = [{"id" : int(productFeaturesNumpy[i][0]), "score": sim[i]} for i in np.argsort(-sim)[0:n]]
+    # return [[productFeaturesNumpy[i][0], sim[i]] for i in np.argsort(-sim)[0:n]]
 
 def recommendProducts(user, n=50):
     #print "users in userFeaturesDict", userFeaturesDict.keys() # empty!!!
