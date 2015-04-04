@@ -3,6 +3,15 @@ Logic is in hello/views.py
 
 sim = np.dot(tovector,productFeaturesNumpy[:,1:].T)
 
+e.g.
+https://guarded-crag-2399.herokuapp.com/recov/7.3602986487918386e-24,%20-8.9922917229303507e-24,%202.6523794485599179e-23,%20-1.2612075438706492e-23,%201.2267009534962004e-23,%20-3.118138388676145e-23,%207.0755569384695972e-24,%207.2103290909611772e-24,%202.2941436697749432e-23,%20-1.9132319264972101e-23
+
+https://guarded-crag-2399.herokuapp.com/reco/25
+
+https://guarded-crag-2399.herokuapp.com/recot/65161040
+
+
+
 based on: 
 
 # python-getting-started
