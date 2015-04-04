@@ -16,7 +16,7 @@ productFeaturesNumpy = np.array(pd.read_csv("hello/data/items1k.csv", header =No
 con = MySQLdb.connect(
     host="blasta.chiim1n4uxwu.eu-central-1.rds.amazonaws.com", 
     user="blasta", 
-    passwd="********", 
+    passwd="27051980", 
     db="blasta")
 cursor = con.cursor()
 
