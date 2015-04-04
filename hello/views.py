@@ -6,6 +6,7 @@ import os
 from .models import Greeting
 import numpy as np
 import pandas as pd
+import MySQLdb
 
 users1k = pd.read_csv("hello/data/users1k.csv", index_col=0, header =None)
 userFeaturesDict = dict(users1k.T)
@@ -26,6 +27,14 @@ def ureco(request, uid):
     recos = recommendProducts(int(uid))
     return HttpResponse(json.dumps(recos), content_type="application/json")
 
+
+def treco(request, tid)
+    stmt = "select * from blasta.item_tastevectors where tid = %d" %tid
+    result = cursor.execute(stmt)
+    vector = cursor.fetchall() 
+    v = np.array((vector[0][1:]))
+    recos = recommendFast(v,productFeaturesNumpy,50)    
+    return HttpResponse(json.dumps(recos), content_type="application/json")
 
 def vreco(request, vector):
     v = np.array([np.float64(d) for d in vector.split(", ")])

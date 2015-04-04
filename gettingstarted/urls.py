@@ -15,5 +15,6 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^reco/([0-9]+)', hello.views.ureco, name='reco'),
     url(r'^recov/(.*)', hello.views.vreco, name='recov'),
+    url(r'^recot/([0-9]+])', hello.views.treco, name='recot'),
 
 )
