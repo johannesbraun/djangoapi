@@ -37,7 +37,8 @@ def ureco(request, uid):
 
 
 def treco(request, tid):
-    stmt = "select * from blasta.item_tastevectors where tid = %d" %tid
+
+    stmt = "select * from blasta.item_tastevectors where tid = %d" %(int(tid))
     result = cursor.execute(stmt)
     vector = cursor.fetchall() 
     v = np.array((vector[0][1:]))
