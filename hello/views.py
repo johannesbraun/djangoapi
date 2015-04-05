@@ -57,20 +57,19 @@ def recommendFast(tovector, productFeaturesNumpy, n):
     idx = np.argsort(-sim)[0:10]
     tracks = {}
     for j, i in enumerate(idx):
-        tracks[int(productFeaturesNumpy[i][0])]= {"rank": j, "score": sim[i]}]
+        tracks[int(productFeaturesNumpy[i][0])]= {"rank": j, "score": sim[i]}
 
     ids = str(list(tracks.keys())).strip("[,]")
 
     stmt = "select tid, username, title, likes, plays from blasta.tracks where tid in (%s)" %(ids)
     result = cursor.execute(stmt)
-
     dbresponse = cursor.fetchall() 
-
     track_info ={}
     for i, t in enumerate(dbresponse):
-        track_info[int(t[0])] = {"username": t[1], "title": t[2]}   
+        track_info[int(t[0])] = {"username": t[1], "title": t[2],"likes": t[3], "plays": t[4]}   
 
-    recos = [{"username": track_info[id].username, "title": track_info[id].title, "score": tracks[id].score, "id" : id for id in track_info]
+    recos = [{ "id" : id, "score": tracks[id]['score'], "title": track_info[id]['title'], "username": track_info[id]['username'],"plays": track_info[id]['plays'],"likes": track_info[id]['likes']} for id in track_info]
+    recos.sort(key=lambda x: x['score'], reverse=True)
     return recos
     # return [[productFeaturesNumpy[i][0], sim[i]] for i in np.argsort(-sim)[0:n]]
 
