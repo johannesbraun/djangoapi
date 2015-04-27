@@ -61,7 +61,7 @@ def reco(request, tid):
     v = np.array((vector[0][3:]))
     # potentially normalize here
     recos = cosine(v,E,100)  
-    return HttpResponse(json.dumps(recos), content_type="application/json")
+    return HttpResponse(json.dumps(recos, ensure_ascii=False), content_type="application/json")
 
 
 def cosine(v, E, n):
@@ -73,7 +73,7 @@ def cosine(v, E, n):
     
     ids = list(item_recos['tid'])
     idstring = str(ids).replace('[','(').replace(']',')')
-    stmt = "select t.tid as tid, username, title, case when artwork_url is not null then artwork_url else avatar_url end as artwork_url from dj_unique_tracks_v3 t left join dj_artwork a on t.tid = a.tid where t.tid in %s" %(idstring)
+    stmt = "select t.tid as tid, username, title, case when artwork_url is not null then artwork_url else coalesce(avatar_url,"") end as artwork_url from dj_unique_tracks_v3 t left join dj_artwork a on t.tid = a.tid where t.tid in %s" %(idstring)
     result = cursor.execute(stmt)
     dbresponse = cursor.fetchall() 
     track_info ={}
