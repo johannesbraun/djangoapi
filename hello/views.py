@@ -73,15 +73,16 @@ def cosine(v, E, n):
     
     ids = list(item_recos['tid'])
     idstring = str(ids).replace('[','(').replace(']',')')
-    stmt = "select tid, username, title from blasta.dj_unique_tracks_v3 where tid in %s" %(idstring)
+    stmt = "select t.tid, username, title, case when artwork_url is not null then artwork_url else avatar_url end as artwork_url from dj_unique_tracks_v3 t inner join dj_artwork a on t.tid = a.tid where t.tid in %s" %(idstring)
     result = cursor.execute(stmt)
     dbresponse = cursor.fetchall() 
     track_info ={}
     for i, t in enumerate(dbresponse):
-        track_info[int(t[0])] = {"username": t[1], "title": t[2]}   
+        track_info[int(t[0])] = {"username": t[1], "title": t[2], "artwork_url": t[3]}   
 
     item_recos.loc[:,'username'] = [track_info[t]['username'] for t in item_recos['tid']]
     item_recos.loc[:,'title'] = [track_info[t]['title'] for t in item_recos['tid']]
+    item_recos.loc[:,'artwork_url'] = [track_info[t]['artwork_url'] for t in item_recos['tid']]
 
 
     recos = [k.to_dict() for i,k in item_recos.iterrows()]
