@@ -65,6 +65,7 @@ def reco(request, tid):
 
 
 def cosine(v, E, n):
+    recoresults = []
     scsim = cos_cdist(v, E[:,3:])
     recos = [[E[i][0], 1-scsim[i]] if scsim[i] >0.000001 else [0,0] for i in np.argsort(scsim)[0:n]]
     #recos = [[E[i][0], scsim[i]]for i in np.argsort(scsim)[0:500]]
@@ -72,22 +73,23 @@ def cosine(v, E, n):
     item_recos = item_recos[item_recos['score']>0]
     
     ids = list(item_recos['tid'])
-    idstring = str(ids).replace('[','(').replace(']',')')
-    stmt = "select t.tid as tid, username, title, case when artwork_url is not null then artwork_url else avatar_url end as artwork_url from dj_unique_tracks_v3 t left join dj_artwork a on t.tid = a.tid where t.tid in %s" %(idstring)
-    result = cursor.execute(stmt)
-    dbresponse = cursor.fetchall() 
-    track_info ={}
-    for i, t in enumerate(dbresponse):
-        track_info[int(t[0])] = {"username": t[1], "title": t[2], "artwork_url": t[3]}   
+    if len(ids)>0:
+        idstring = str(ids).replace('[','(').replace(']',')')
+        stmt = "select t.tid as tid, username, title, case when artwork_url is not null then artwork_url else avatar_url end as artwork_url from dj_unique_tracks_v3 t left join dj_artwork a on t.tid = a.tid where t.tid in %s" %(idstring)
+        result = cursor.execute(stmt)
+        dbresponse = cursor.fetchall() 
+        track_info ={}
+        for i, t in enumerate(dbresponse):
+            track_info[int(t[0])] = {"username": t[1], "title": t[2], "artwork_url": t[3]}   
 
-    item_recos.loc[:,'username'] = [track_info[t]['username'] for t in item_recos['tid']]
-    item_recos.loc[:,'title'] = [track_info[t]['title'] for t in item_recos['tid']]
-    item_recos.loc[:,'artwork_url'] = [track_info[t]['artwork_url'] for t in item_recos['tid']]
+        item_recos.loc[:,'username'] = [track_info[t]['username'] for t in item_recos['tid']]
+        item_recos.loc[:,'title'] = [track_info[t]['title'] for t in item_recos['tid']]
+        item_recos.loc[:,'artwork_url'] = [track_info[t]['artwork_url'] for t in item_recos['tid']]
 
 
-    recos = [k.to_dict() for i,k in item_recos.iterrows()]
-    recos.sort(key=lambda x: x['score'], reverse=True)
-    return recos 
+        recoresults = [k.to_dict() for i,k in item_recos.iterrows()]
+        recoresults.sort(key=lambda x: x['score'], reverse=True)
+    return recoresults 
 
 
 def treco(request, tid):
