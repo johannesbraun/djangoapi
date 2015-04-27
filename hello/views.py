@@ -8,10 +8,19 @@ import numpy as np
 import pandas as pd
 import MySQLdb
 from collections import OrderedDict
+import scipy.spatial.distance
 
-users1k = pd.read_csv("hello/data/users1k.csv", index_col=0, header =None)
-userFeaturesDict = dict(users1k.T)
-productFeaturesNumpy = np.array(pd.read_csv("hello/data/items100k.csv", header =None))
+
+#users1k = pd.read_csv("hello/data/users1k.csv", index_col=0, header =None)
+#userFeaturesDict = dict(users1k.T)
+#productFeaturesNumpy = np.array(pd.read_csv("hello/data/items100k.csv", header =None))
+EDF = pd.read_csv("E.csv", dtype={'a': np.float32})
+E = np.array(EDF).astype(float) 
+
+# for normalization
+#dfminmax = pd.read_csv("dfminmax.csv")
+#X_min = np.array(dfminmax.loc[0,:])
+#X_max = np.array(dfminmax.loc[1,:])
 
 # connect
 con = MySQLdb.connect(
@@ -20,6 +29,14 @@ con = MySQLdb.connect(
     passwd="27051980", 
     db="blasta")
 cursor = con.cursor()
+
+
+def cos_cdist(vector, matrix):
+    """
+    Compute the cosine distances between each row of matrix and vector.
+    """
+    v = vector.reshape(1, -1)
+    return scipy.spatial.distance.cdist(matrix, v, 'cosine').reshape(-1)
 
 # Create your views here.
 def index(request):
@@ -35,6 +52,41 @@ def index(request):
 def ureco(request, uid):
     recos = recommendProducts(int(uid))
     return HttpResponse(json.dumps(recos), content_type="application/json")
+
+
+def reco(request, tid):
+    stmt = "select * from blasta.echoproxies where tid = %d" %(int(tid))
+    result = cursor.execute(stmt)
+    vector = cursor.fetchall() 
+    v = np.array((vector[0][3:]))
+    # potentially normalize here
+    recos = cosine(v,E,100)  
+    return HttpResponse(json.dumps(recos), content_type="application/json")
+
+
+def cosine(v, E, n):
+    scsim = cos_cdist(v, E[:,3:])
+    recos = [[E[i][0], 1-scsim[i]] if scsim[i] >0.000001 else [0,0] for i in np.argsort(scsim)[0:n]]
+    #recos = [[E[i][0], scsim[i]]for i in np.argsort(scsim)[0:500]]
+    item_recos = pd.DataFrame(recos, columns=['tid','score'])   
+    item_recos = item_recos[item_recos['score']>0]
+    
+    ids = list(item_recos['tid'])
+    idstring = str(ids).replace('[','(').replace(']',')')
+    stmt = "select tid, username, title from blasta.dj_unique_tracks_v3 where tid in %s" %(idstring)
+    result = cursor.execute(stmt)
+    dbresponse = cursor.fetchall() 
+    track_info ={}
+    for i, t in enumerate(dbresponse):
+        track_info[int(t[0])] = {"username": t[1], "title": t[2]}   
+
+    item_recos.loc[:,'username'] = [track_info[t]['username'] for t in item_recos['tid']]
+    item_recos.loc[:,'title'] = [track_info[t]['title'] for t in item_recos['tid']]
+
+
+    recos = [k.to_dict() for i,k in item_recos.iterrows()]
+    recos.sort(key=lambda x: x['score'], reverse=True)
+    return recos 
 
 
 def treco(request, tid):
