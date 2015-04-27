@@ -73,7 +73,7 @@ def cosine(v, E, n):
     
     ids = list(item_recos['tid'])
     idstring = str(ids).replace('[','(').replace(']',')')
-    stmt = "select t.tid, username, title, case when artwork_url is not null then artwork_url else avatar_url end as artwork_url from dj_unique_tracks_v3 t inner join dj_artwork a on t.tid = a.tid where t.tid in %s" %(idstring)
+    stmt = "select t.tid as tid, username, title, case when artwork_url is not null then artwork_url else avatar_url end as artwork_url from dj_unique_tracks_v3 t left join dj_artwork a on t.tid = a.tid where t.tid in %s" %(idstring)
     result = cursor.execute(stmt)
     dbresponse = cursor.fetchall() 
     track_info ={}
