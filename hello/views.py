@@ -14,7 +14,7 @@ import scipy.spatial.distance
 #users1k = pd.read_csv("hello/data/users1k.csv", index_col=0, header =None)
 #userFeaturesDict = dict(users1k.T)
 #productFeaturesNumpy = np.array(pd.read_csv("hello/data/items100k.csv", header =None))
-EDF = pd.read_csv("E.csv", dtype={'a': np.float32})
+EDF = pd.read_csv("hello/data/E.csv", dtype={'a': np.float32})
 E = np.array(EDF).astype(float) 
 
 # for normalization
