@@ -24,10 +24,10 @@ E = np.array(EDF).astype(float)
 
 # connect
 con = MySQLdb.connect(
-    host="blasta.chiim1n4uxwu.eu-central-1.rds.amazonaws.com", 
-    user="blasta", 
-    passwd="27051980", 
-    db="blasta")
+    host="blastafast.c7dfxf4q39rn.us-east-1.rds.amazonaws.com", 
+    user="blastafast", 
+    passwd="blastafast", 
+    db="blastafast")
 cursor = con.cursor()
 
 
