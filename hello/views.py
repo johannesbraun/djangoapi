@@ -55,7 +55,7 @@ def ureco(request, uid):
 
 
 def reco(request, tid):
-    stmt = "select * from blasta.echoproxies where tid = %d" %(int(tid))
+    stmt = "select * from blastafast.echoproxies where tid = %d" %(int(tid))
     result = cursor.execute(stmt)
     vector = cursor.fetchall() 
     v = np.array((vector[0][3:]))
@@ -93,7 +93,7 @@ def cosine(v, E, n):
 
 
 def treco(request, tid):
-    stmt = "select * from blasta.item_tastevectors where tid = %d" %(int(tid))
+    stmt = "select * from blastafast.item_tastevectors where tid = %d" %(int(tid))
     result = cursor.execute(stmt)
     vector = cursor.fetchall() 
     v = np.array((vector[0][1:]))
@@ -116,7 +116,7 @@ def recommendFast(tovector, productFeaturesNumpy, n):
 
     ids = str(list(tracks.keys())).strip("[,]")
 
-    stmt = "select tid, username, title, likes, plays from blasta.tracks where tid in (%s)" %(ids)
+    stmt = "select tid, username, title, likes, plays from blastafast.tracks where tid in (%s)" %(ids)
     result = cursor.execute(stmt)
     dbresponse = cursor.fetchall() 
     track_info ={}
